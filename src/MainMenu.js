@@ -7,7 +7,7 @@ const MainMenu = ({ onStartGame, highScore }) => {
       <h1>Snake Game</h1>
       <button onClick={onStartGame} id="start">Start Game</button>
     
-      <div>High Score: {highScore}</div> {/* Display high score */}
+      <div style={{ marginTop: '30px' }}>High Score: {highScore}</div> {/* Display high score */}
     </div>
   );
 };

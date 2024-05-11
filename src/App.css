@@ -52,7 +52,8 @@ body {
 }
 
 .main-menu .high-score {
-  margin-top: 20px;
+  margin-top: 50px;
+  padding-top: 10px;
   font-size: 18px;
   color: #555; /* Gray text color */
 }
