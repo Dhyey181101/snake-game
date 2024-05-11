@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import './SnakeGame.css';
 import eatSound from './eat.mp3'; // Import the eat sound file
-import gameOverSound from './gameOver.mp3'; // Import the game over sound file
 
-const SnakeGame = ({ onGameOver,setHighScore, highScore}) => {
+
+const SnakeGame = ({ onGameOver, setHighScore, highScore }) => {
   const gridSize = 20;
   const canvasWidth = 400;
   const canvasHeight = 400;
@@ -15,11 +15,11 @@ const SnakeGame = ({ onGameOver,setHighScore, highScore}) => {
   const [dy, setDy] = useState(0);
   const [score, setScore] = useState(0);
   const [speed, setSpeed] = useState(100);
-  
+
   const [lives, setLives] = useState(initialLives); // State variable for lives
 
   const [playEatSound, setPlayEatSound] = useState(false);
-  const [playGameOverSound, setPlayGameOverSound] = useState(false);
+
 
   useEffect(() => {
     if (playEatSound) {
@@ -29,13 +29,6 @@ const SnakeGame = ({ onGameOver,setHighScore, highScore}) => {
     }
   }, [playEatSound]);
 
-  useEffect(() => {
-    if (playGameOverSound) {
-      const audio = new Audio(gameOverSound);
-      audio.play();
-      audio.onended = () => setPlayGameOverSound(false);
-    }
-  }, [playGameOverSound]);
 
   const handleKeyDown = useCallback((e) => {
     if (e.key === 'ArrowUp' && dy === 0) {
@@ -97,7 +90,7 @@ const SnakeGame = ({ onGameOver,setHighScore, highScore}) => {
       localStorage.setItem('snakeHighScore', score);
       setHighScore(score);
     }
-  }, [score, highScore]);
+  }, [score, highScore, setHighScore]);
 
   const generateApple = (newSnake) => {
     let newApple;
@@ -118,9 +111,10 @@ const SnakeGame = ({ onGameOver,setHighScore, highScore}) => {
   };
 
   const gameOver = () => {
-    setPlayGameOverSound(true); // Trigger game over sound effect
+
     alert(`Game Over! Your score is ${score}`);
     onGameOver();
+    
   };
 
   const resetGame = () => {
@@ -162,8 +156,8 @@ const SnakeGame = ({ onGameOver,setHighScore, highScore}) => {
           <option value="50">Medium</option>
           <option value="20">Fast</option>
         </select>
-      </div>
     </div>
+  </div>
   );
 };
 
