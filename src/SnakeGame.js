@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import './SnakeGame.css';
 import eatSound from './eat.mp3'; // Import the eat sound file
+import appleImage from './apple.jpeg';
+
 
 
 const SnakeGame = ({ onGameOver, setHighScore, highScore }) => {
@@ -144,7 +146,8 @@ const SnakeGame = ({ onGameOver, setHighScore, highScore }) => {
     <div className="snake-game">
       <div className="game-canvas">
         {renderSnake()}
-        <div className="apple" style={{ left: apple.x * gridSize, top: apple.y * gridSize }}></div>
+        <img src={appleImage} className="apple" style={{ left: apple.x * gridSize, top: apple.y * gridSize }} alt="apple" />
+
       </div>
       <div className="score">Score: {score}</div>
       <div className="lives">Lives: {renderLives()}</div> {/* Display heart emojis for lives */}
