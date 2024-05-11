@@ -1,25 +1,34 @@
-import logo from './logo.svg';
+// App.js
+import React, { useState } from 'react';
+import SnakeGame from './SnakeGame';
+import MainMenu from './MainMenu';
 import './App.css';
 
-function App() {
+const App = () => {
+  const [gameStarted, setGameStarted] = useState(false);
+
+  const handleStartGame = () => {
+    setGameStarted(true);
+  };
+
+  const handleSettings = () => {
+    // Implement settings functionality here
+    alert('Settings');
+  };
+
+  const handleGameOver = () => {
+    setGameStarted(false); // Set game state to false when game is over
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="app">
+      {!gameStarted ? (
+        <MainMenu onStartGame={handleStartGame} onSettings={handleSettings} />
+      ) : (
+        <SnakeGame onGameOver={handleGameOver} />
+      )}
     </div>
   );
-}
+};
 
 export default App;
