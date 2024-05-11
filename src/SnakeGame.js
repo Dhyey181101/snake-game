@@ -1,13 +1,13 @@
-// SnakeGame.js
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import './SnakeGame.css';
 import eatSound from './eat.mp3'; // Import the eat sound file
 import gameOverSound from './gameOver.mp3'; // Import the game over sound file
 
-const SnakeGame = ({ onGameOver }) => {
+const SnakeGame = ({ onGameOver,setHighScore, highScore}) => {
   const gridSize = 20;
   const canvasWidth = 400;
   const canvasHeight = 400;
+  const initialLives = 3; // Initial number of lives
 
   const [snake, setSnake] = useState([{ x: 10, y: 10 }]);
   const [apple, setApple] = useState({ x: Math.floor(Math.random() * (canvasWidth / gridSize)), y: Math.floor(Math.random() * (canvasHeight / gridSize)) });
@@ -15,10 +15,8 @@ const SnakeGame = ({ onGameOver }) => {
   const [dy, setDy] = useState(0);
   const [score, setScore] = useState(0);
   const [speed, setSpeed] = useState(100);
-  const [highScore, setHighScore] = useState(() => {
-    const storedHighScore = localStorage.getItem('snakeHighScore');
-    return storedHighScore ? parseInt(storedHighScore) : 0;
-  });
+  
+  const [lives, setLives] = useState(initialLives); // State variable for lives
 
   const [playEatSound, setPlayEatSound] = useState(false);
   const [playGameOverSound, setPlayGameOverSound] = useState(false);
@@ -39,29 +37,29 @@ const SnakeGame = ({ onGameOver }) => {
     }
   }, [playGameOverSound]);
 
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (e.key === 'ArrowUp' && dy === 0) {
-        setDx(0);
-        setDy(-1);
-      } else if (e.key === 'ArrowDown' && dy === 0) {
-        setDx(0);
-        setDy(1);
-      } else if (e.key === 'ArrowLeft' && dx === 0) {
-        setDx(-1);
-        setDy(0);
-      } else if (e.key === 'ArrowRight' && dx === 0) {
-        setDx(1);
-        setDy(0);
-      }
-    };
+  const handleKeyDown = useCallback((e) => {
+    if (e.key === 'ArrowUp' && dy === 0) {
+      setDx(0);
+      setDy(-1);
+    } else if (e.key === 'ArrowDown' && dy === 0) {
+      setDx(0);
+      setDy(1);
+    } else if (e.key === 'ArrowLeft' && dx === 0) {
+      setDx(-1);
+      setDy(0);
+    } else if (e.key === 'ArrowRight' && dx === 0) {
+      setDx(1);
+      setDy(0);
+    }
+  }, [dx, dy]);
 
+  useEffect(() => {
     document.addEventListener('keydown', handleKeyDown);
 
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
     };
-  }, [dx, dy]);
+  }, [handleKeyDown]);
 
   useEffect(() => {
     const moveSnake = () => {
@@ -77,7 +75,12 @@ const SnakeGame = ({ onGameOver }) => {
       }
 
       if (checkCollision(newSnake)) {
-        gameOver();
+        if (lives > 1) { // Decrease lives if there are more than 1 life left
+          setLives(lives - 1);
+          resetGame();
+        } else {
+          gameOver();
+        }
         return;
       }
 
@@ -87,7 +90,7 @@ const SnakeGame = ({ onGameOver }) => {
     const gameLoop = setInterval(moveSnake, speed);
 
     return () => clearInterval(gameLoop);
-  }, [snake, dx, dy, apple, score, speed]);
+  }, [snake, dx, dy, apple, score, speed, lives]);
 
   useEffect(() => {
     if (score > highScore) {
@@ -115,15 +118,32 @@ const SnakeGame = ({ onGameOver }) => {
   };
 
   const gameOver = () => {
+    setPlayGameOverSound(true); // Trigger game over sound effect
     alert(`Game Over! Your score is ${score}`);
-    onGameOver(); // Call the callback function
+    onGameOver();
   };
-  
+
+  const resetGame = () => {
+    setSnake([{ x: 10, y: 10 }]);
+    setApple({ x: Math.floor(Math.random() * (canvasWidth / gridSize)), y: Math.floor(Math.random() * (canvasHeight / gridSize)) });
+    setDx(0);
+    setDy(0);
+    setScore(0);
+    setSpeed(100);
+  };
 
   const renderSnake = () => {
     return snake.map((segment, index) => (
       <div key={index} className={`snake-segment${index === 0 ? ' snake-head' : index === snake.length - 1 ? ' snake-tail' : ''}`} style={{ left: segment.x * gridSize, top: segment.y * gridSize }}></div>
     ));
+  };
+
+  const renderLives = () => {
+    const hearts = [];
+    for (let i = 0; i < lives; i++) {
+      hearts.push('❤️'); // Use heart emoji character
+    }
+    return hearts;
   };
 
   return (
@@ -133,6 +153,7 @@ const SnakeGame = ({ onGameOver }) => {
         <div className="apple" style={{ left: apple.x * gridSize, top: apple.y * gridSize }}></div>
       </div>
       <div className="score">Score: {score}</div>
+      <div className="lives">Lives: {renderLives()}</div> {/* Display heart emojis for lives */}
       <div className="high-score">High Score: {highScore}</div>
       <div className="speed-selector">
         <label htmlFor="speed">Select Speed:</label>
