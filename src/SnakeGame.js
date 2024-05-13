@@ -3,8 +3,6 @@ import './SnakeGame.css';
 import eatSound from './eat.mp3'; // Import the eat sound file
 import appleImage from './apple.jpeg';
 
-
-
 const SnakeGame = ({ onGameOver, setHighScore, highScore }) => {
   const gridSize = 20;
   const canvasWidth = 400;
@@ -21,16 +19,6 @@ const SnakeGame = ({ onGameOver, setHighScore, highScore }) => {
   const [lives, setLives] = useState(initialLives); // State variable for lives
 
   const [playEatSound, setPlayEatSound] = useState(false);
-
-
-  useEffect(() => {
-    if (playEatSound) {
-      const audio = new Audio(eatSound);
-      audio.play();
-      audio.onended = () => setPlayEatSound(false);
-    }
-  }, [playEatSound]);
-
 
   const handleKeyDown = useCallback((e) => {
     if (e.key === 'ArrowUp' && dy === 0) {
@@ -113,10 +101,8 @@ const SnakeGame = ({ onGameOver, setHighScore, highScore }) => {
   };
 
   const gameOver = () => {
-
     alert(`Game Over! Your score is ${score}`);
     onGameOver();
-    
   };
 
   const resetGame = () => {
@@ -126,6 +112,29 @@ const SnakeGame = ({ onGameOver, setHighScore, highScore }) => {
     setDy(0);
     setScore(0);
     setSpeed(100);
+  };
+
+  const handleMove = (direction) => {
+    switch (direction) {
+      case 'up':
+        setDx(0);
+        setDy(-1);
+        break;
+      case 'down':
+        setDx(0);
+        setDy(1);
+        break;
+      case 'left':
+        setDx(-1);
+        setDy(0);
+        break;
+      case 'right':
+        setDx(1);
+        setDy(0);
+        break;
+      default:
+        break;
+    }
   };
 
   const renderSnake = () => {
@@ -147,10 +156,9 @@ const SnakeGame = ({ onGameOver, setHighScore, highScore }) => {
       <div className="game-canvas">
         {renderSnake()}
         <img src={appleImage} className="apple" style={{ left: apple.x * gridSize, top: apple.y * gridSize }} alt="apple" />
-
       </div>
       <div className="score">Score: {score}</div>
-      <div className="lives">Lives: {renderLives()}</div> {/* Display heart emojis for lives */}
+      <div className="lives">Lives: {renderLives()}</div>
       <div className="high-score">High Score: {highScore}</div>
       <div className="speed-selector">
         <label htmlFor="speed">Select Speed:</label>
@@ -159,8 +167,16 @@ const SnakeGame = ({ onGameOver, setHighScore, highScore }) => {
           <option value="50">Medium</option>
           <option value="20">Fast</option>
         </select>
+      </div>
+      <div className="arrow-buttons">
+        <button onClick={() => handleMove('up')} id="topbutton">↑</button>
+        <div>
+          <button onClick={() => handleMove('left')}>←</button>
+          <button onClick={() => handleMove('down')}>↓</button>
+          <button onClick={() => handleMove('right')}>→</button>
+        </div>
+      </div>
     </div>
-  </div>
   );
 };
 
